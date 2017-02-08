@@ -1,0 +1,20 @@
+{
+  "name": "attendance",
+  "version": "1.0.0",
+  "description": "Attendance system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/.bin/electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spankie/attendance.git"
+  },
+  "author": "spankie",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spankie/attendance/issues"
+  },
+  "homepage": "https://github.com/spankie/attendance#readme"
+}
