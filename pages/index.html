@@ -14,11 +14,30 @@
     </head>
 
     <body class="navy">
-      <div class="body pa4">
-        <h1 class="mv0">Hello World!</h1>
-        We are using node <script>document.write(process.versions.node)</script>,
-        Chrome <script>document.write(process.versions.chrome)</script>,
-        and Electron <script>document.write(process.versions.electron)</script>.
+      <div class="body ph7-l ph5-m ph2">
+        <br><br>
+        <h1 class="mv0 tc white">Welcome!</h1>
+
+        <div class="dib fr">
+          <p class="white f3 mb3 tc"><u>Login</u></p>
+          <form class="cf" id="login">
+            <label class="db mb2 white o-60">Username:</label>
+            <input type="text" placeholder="Username" name="username" class="login navy pa3 br2 db mb2 f4 ba">
+            <label class="db mb2 white o-60">Password:</label>
+            <input type="password" name="password" placeholder="Password" class="login navy pa3 br2 db mb2 f4 ba">
+            <input type="submit" name="login" value="LOGIN" class="bg-navy white ba pa3 fr">  
+          </form>
+        </div>
+        <div class="cf"></div>
+        <br>
+        <hr>
+        <br>
+        <div class="white tc">
+          We are using node <script>document.write(process.versions.node)</script>,
+          Chrome <script>document.write(process.versions.chrome)</script>,
+          and Electron <script>document.write(process.versions.electron)</script>.
+        </div>
+
       </div>
     </body>
 </html>
