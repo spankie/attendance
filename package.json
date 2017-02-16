@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/spankie/attendance/issues"
   },
-  "homepage": "https://github.com/spankie/attendance#readme"
+  "homepage": "https://github.com/spankie/attendance#readme",
+  "dependencies": {
+    "mysql": "2.12.0"
+  }
 }
