@@ -3,6 +3,8 @@ exports.config = {
         host     : 'localhost',
         user     : 'root',
         password : 'toor',
-        database : 'attendance'
+        database : 'attendance',
+        connectTimeout : 10000,
+        acquireTimeout : 10000
     }
 }

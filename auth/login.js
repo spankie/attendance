@@ -1,31 +1,36 @@
 const {BrowserWindow} = require("electron")
-const mysql = require("mysql")
 const {config} = require("../config/config.js")
 const path = require('path')
 const url = require('url')
 
-exports.login = (username, password) => {
+var mysql = require("mysql");
+var connection = mysql.createConnection(config.dbAttendance)
+connection.connect();
+
+exports.login = function (username, password) {
     
     if(username == "" || password == "") return;
 
-    var connection = mysql.createConnection(config.dbAttendance);
-    
-    connection.connect();
-    
+    console.log("username and password not empty");
     console.log(username + " ::: " + password);
 
     var loginQuery = "SELECT * FROM admin WHERE username = '" + username + "' AND password = '" + password + "'";
+    console.log(loginQuery);
 
-    connection.query(loginQuery, function (error, results, fields) {
-        if (error) console.log("error: ", error); //throw error
-        else if (results && results.length > 0) {
-            console.log('User: ', results[0].fname);
-            createWindow()
+    connection.query(loginQuery, function(error, results, fields) {
+        if(error) {
+            console.log(error);
+            return;
         }
-        
+        if (results && (results.length > 0)) {
+            console.log("results", results);
+            createWindow();
+        } else {
+            console.log("no user");
+        }
+        console.log("no user...");
     });
-
-    connection.end();
+    
 }
 
 function createWindow(){
