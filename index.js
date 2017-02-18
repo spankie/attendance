@@ -10,6 +10,8 @@ function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({width: 800, height: 600})
 
+  // authenticate user before deciding the page to load.
+
   // and load the index.html of the app.
   win.loadURL(url.format({
     pathname: path.join(__dirname + "/pages/", 'index.html'),
@@ -54,3 +56,11 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 exports.auth = require("./auth/login.js")
+
+exports.recreateWindow = function() {
+  win.loadURL(url.format({
+    pathname: path.join(__dirname + "/pages/", 'index.html'), // load the clock in/out page
+    protocol: 'file:',
+    slashes: true
+  }))
+}
