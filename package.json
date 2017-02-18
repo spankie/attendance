@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/spankie/attendance#readme",
   "dependencies": {
-    "mysql": "2.12.0"
+    "electron": "^1.2.5",
+    "mysql": "2.12.0",
+    "path": "^0.12.7",
+    "url": "^0.11.0"
   }
 }
