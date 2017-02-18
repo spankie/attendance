@@ -24,7 +24,8 @@ exports.login = function (username, password) {
         }
         if (results && (results.length > 0)) {
             console.log("results", results);
-            createWindow();
+            // createWindow();
+            return "logged in";
         } else {
             console.log("no user");
         }
