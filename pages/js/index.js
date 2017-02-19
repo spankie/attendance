@@ -13,4 +13,3 @@ loginButton.addEventListener("click", () => {
         document.getElementById("error").value = err;
     }
 })
-

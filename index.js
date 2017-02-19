@@ -103,11 +103,20 @@ function loginWindow() {
 function confirmWindow(clock) {
   console.log("loading confirm window");
   var win = new BrowserWindow({width: 450, height: 300});
-  win.loadURL(url.format({
-    pathname: path.join(__dirname + "/pages/", 'confirm.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
+  if(clock == "in") {
+      win.loadURL(url.format({
+        pathname: path.join(__dirname + "/pages/", 'confirmin.html'),
+        protocol: 'file:',
+        slashes: true
+      }))
+  } else if (clock == "out") {
+      win.loadURL(url.format({
+        pathname: path.join(__dirname + "/pages/", 'confirmout.html'),
+        protocol: 'file:',
+        slashes: true
+      }))
+  }
+
 }
 
 function checkLogin(msg, uname, pass) {
@@ -125,11 +134,23 @@ function checkLogin(msg, uname, pass) {
 }
 
 function clockin(id) {
-  clock.clockIN(id);
+  console.log("clockin()")
+  clock.clockIN(id, function(message) {
+        ipcMain.on('message', (event, arg) => {
+            console.log("send :", message, ": to confirmin.html");
+            event.sender.send("message", message);
+        });
+  });
 }
 
 function clockout(id) {
-  clock.clockOUT(id);
+  console.log("clockout()");
+  clock.clockOUT(id, function(message) {
+        ipcMain.on('message', (event, arg) => {
+            console.log("send :", message, ": to confirmout.html");
+            event.sender.send("message", message);
+        });
+  });
 }
 
 // exports.recreateWindow = clockWindow;
@@ -139,6 +160,18 @@ ipcMain.on('login', (event, arg) => {
     console.log("password:", arg.password);
     auth.login(arg.username, arg.password, checkLogin);
     // event.returnValue = "logged in";
+});
+
+ipcMain.on('clockin', (event, arg) => {
+    console.log("request to clock in");
+    clockin(arg.emp_id)
+    // event.returnValue = "clocked in";
+});
+
+ipcMain.on('clockout', (event, arg) => {
+    console.log("request to clock out");
+    clockout(arg.emp_id)
+    // event.returnValue = "clocked Out";
 });
 
 module.exports.confirmWindow = confirmWindow;
