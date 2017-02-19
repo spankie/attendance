@@ -1,10 +1,14 @@
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const url = require('url')
+const fs = require('fs');
+
+var auth = require("./auth/login.js");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
+let userDataConfig = path.join(app.getPath("userData"), "store.json");
 
 function createWindow () {
   // Create the browser window.
@@ -13,11 +17,14 @@ function createWindow () {
   // authenticate user before deciding the page to load.
 
   // and load the index.html of the app.
-  win.loadURL(url.format({
-    pathname: path.join(__dirname + "/pages/", 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
+  var obj = parseDataFile(userDataConfig, {});
+  if (obj.username && obj.password) {
+    console.log("Username and password found");
+    auth.login(obj.username, obj.password, checkLogin);
+  } else {
+    console.log("username and password not found\nCall loginWindow()...")
+    loginWindow();
+  }
 
   // Open the DevTools.
   // win.webContents.openDevTools()
@@ -55,12 +62,62 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-exports.auth = require("./auth/login.js")
+// exports.auth = require("./auth/login.js");
 
-exports.recreateWindow = function() {
-  win.loadURL(url.format({
-    pathname: path.join(__dirname + "/pages/", 'index.html'), // load the clock in/out page
-    protocol: 'file:',
-    slashes: true
-  }))
+function parseDataFile(filePath, defaults) {
+  console.log("parsing data file from ", userDataConfig);
+  // We'll try/catch it in case the file doesn't exist yet, which will be the case on the first application run.
+  // `fs.readFileSync` will return a JSON string which we then parse into a Javascript object
+  try {
+    return JSON.parse(fs.readFileSync(filePath));
+  } catch(error) {
+    // if there was some kind of error, return the passed in defaults instead.
+    return defaults;
+  }
 }
+
+function storeDataFile(data) {
+  console.log("storing data file to ", userDataConfig);
+  fs.writeFileSync(userDataConfig, JSON.stringify(data));
+}
+
+function clockWindow() {
+  console.log("loading clock window");
+    win.loadURL(url.format({
+      pathname: path.join(__dirname + "/pages/", 'clock.html'), // load the clock in/out page
+      protocol: 'file:',
+      slashes: true
+    }));
+}
+
+function loginWindow() {
+  console.log("loading login window");
+    win.loadURL(url.format({
+      pathname: path.join(__dirname + "/pages/", 'index.html'),
+      protocol: 'file:',
+      slashes: true
+    }))
+}
+
+function checkLogin(msg, uname, pass) {
+  console.log("checking if login was successful...");
+  if(msg == "ok") {
+    var obj = parseDataFile(userDataConfig, {});
+    obj.username = uname;
+    obj.password = pass;
+    storeDataFile(obj);
+    clockWindow();
+    return;      
+  } else {
+    loginWindow();
+  }
+}
+
+// exports.recreateWindow = clockWindow;
+
+ipcMain.on('login', (event, arg) => {
+    console.log("username:", arg.username);
+    console.log("password:", arg.password);
+    auth.login(arg.username, arg.password, checkLogin);
+    // event.returnValue = "logged in";
+});
