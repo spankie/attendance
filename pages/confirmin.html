@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+      <title>Confirm</title>
+    
+      <link rel="stylesheet" href="css/normalize.css">
+      <link rel="stylesheet" href="css/tachyons.min.css">
+      <link rel="stylesheet" href="css/style.css">
+
+    </head>
+
+    <body class="navy bg-orange">
+        <h1 class="tc mv0 pt3 pb2">Input Your ID or Fingerpint</h1>
+        <div class="white tc">
+            <p class="red mv0" id="err"></p>
+            <p class="navy mv0" id="welcome"></p>
+            <input class="pa3 ba navy dib" name="empid" type="text" id="empid" placeholder="Employee id"> OR
+            <button type="button" class="pa3 ba navy dib" id="fprint">Get fingerprint</button>
+        </div>
+        <div class="tc pv3">
+            <button type="button" class="pv3 ph4 ba bg-navy white" id="okay">OK</button>
+        </div>
+
+        <script src="js/confirmin.js"></script>
+    </body>
+</html>
