@@ -1,7 +1,7 @@
 const {remote, ipcRenderer} = require("electron")
-const {auth, recreateWindow} = remote.require("./index.js")
 
-var loginButton = document.getElementById("login")
+
+var loginButton = document.getElementById("login");
 
 loginButton.addEventListener("click", () => {
     var username = document.getElementById("username").value
@@ -12,11 +12,5 @@ loginButton.addEventListener("click", () => {
     if (err) {
         document.getElementById("error").value = err;
     }
-
-    // var status = auth.login(username, password);
-    // console.log("status from renderer : ", status);
-
-    // if(status == "logged in" ) {
-    //     recreateWindow();
-    // }
 })
+
