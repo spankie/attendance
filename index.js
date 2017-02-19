@@ -4,6 +4,7 @@ const url = require('url')
 const fs = require('fs');
 
 var auth = require("./auth/login.js");
+var clock = require("./auth/clock")
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -99,6 +100,16 @@ function loginWindow() {
     }))
 }
 
+function confirmWindow(clock) {
+  console.log("loading confirm window");
+  var win = new BrowserWindow({width: 450, height: 300});
+  win.loadURL(url.format({
+    pathname: path.join(__dirname + "/pages/", 'confirm.html'),
+    protocol: 'file:',
+    slashes: true
+  }))
+}
+
 function checkLogin(msg, uname, pass) {
   console.log("checking if login was successful...");
   if(msg == "ok") {
@@ -113,6 +124,14 @@ function checkLogin(msg, uname, pass) {
   }
 }
 
+function clockin(id) {
+  clock.clockIN(id);
+}
+
+function clockout(id) {
+  clock.clockOUT(id);
+}
+
 // exports.recreateWindow = clockWindow;
 
 ipcMain.on('login', (event, arg) => {
@@ -121,3 +140,7 @@ ipcMain.on('login', (event, arg) => {
     auth.login(arg.username, arg.password, checkLogin);
     // event.returnValue = "logged in";
 });
+
+module.exports.confirmWindow = confirmWindow;
+module.exports.clockin = clockin;
+module.exports.clockout = clockout;
