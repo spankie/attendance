@@ -15,12 +15,15 @@ okButton.addEventListener("click", () => {
 
 });
 
-ipcRenderer.on("message", function(event, args) {
-    var err = document.getElementById("err");
-    if(args == "Welcome to work") {
-        document.getElementById("welcome").innerHTML = args;
-        // set time interval to close the page
-    } else {
-        err.innerHTML = args;
-    }
-})
+// ipcRenderer.on("message", function(event, args) {
+//     console.log("message:", args);
+//     var err = document.getElementById("err");
+//     if(args == "Welcome to work") {
+//         console.log("welcome message:", args);
+//         document.getElementById("welcome").innerHTML = args;
+//         // set time interval to close the page
+//     } else {
+//         console.log("err message:", args);
+//         err.innerHTML = args;
+//     }
+// })
