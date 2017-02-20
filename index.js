@@ -9,6 +9,7 @@ var clock = require("./auth/clock")
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
+let confirmWin
 let userDataConfig = path.join(app.getPath("userData"), "store.json");
 
 function createWindow () {
@@ -102,20 +103,24 @@ function loginWindow() {
 
 function confirmWindow(clock) {
   console.log("loading confirm window");
-  var win = new BrowserWindow({width: 450, height: 300});
+  confirmWin = new BrowserWindow({width: 450, height: 300, parent: win, modal: true});
   if(clock == "in") {
-      win.loadURL(url.format({
+      confirmWin.loadURL(url.format({
         pathname: path.join(__dirname + "/pages/", 'confirmin.html'),
         protocol: 'file:',
         slashes: true
       }))
   } else if (clock == "out") {
-      win.loadURL(url.format({
+      confirmWin.loadURL(url.format({
         pathname: path.join(__dirname + "/pages/", 'confirmout.html'),
         protocol: 'file:',
         slashes: true
       }))
   }
+
+  confirmWin.on("close", () => {
+    confirmWin = null;
+  })
 
 }
 
@@ -136,22 +141,44 @@ function checkLogin(msg, uname, pass) {
 function clockin(id) {
   console.log("clockin()")
   clock.clockIN(id, function(message) {
-        ipcMain.on('message', (event, arg) => {
-            console.log("send :", message, ": to confirmin.html");
-            event.sender.send("message", message);
-        });
+      console.log("send :", message, ": to confirmin.html");
+      if(message == "Welcome to work") {
+        if(confirmWin != null) {
+          console.log("close window")
+          confirmWin.close()
+          // confirmWin.webContents.send("message", message);
+        } else {
+          console.log("confirmwin is null");
+        }
+      } else {
+        console.log("window reload")
+        confirmWin.reload()
+      }
   });
 }
 
 function clockout(id) {
   console.log("clockout()");
   clock.clockOUT(id, function(message) {
-        ipcMain.on('message', (event, arg) => {
-            console.log("send :", message, ": to confirmout.html");
-            event.sender.send("message", message);
-        });
+      console.log("send :", message, ": to confirmout.html");
+      if(message == "Goodbye") {
+        if(confirmWin != null) {
+          console.log("close window")
+          confirmWin.close()
+          // confirmWin.webContents.send("message", message);
+        } else {
+          console.log("confirmwin is null");
+        }
+      } else {
+        console.log("window reload")
+        confirmWin.reload()
+      }
   });
 }
+
+// function closeWindow() {
+//   app.w
+// }
 
 // exports.recreateWindow = clockWindow;
 
