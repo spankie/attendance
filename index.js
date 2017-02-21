@@ -1,10 +1,13 @@
-const {app, BrowserWindow, ipcMain} = require('electron')
+const {app, BrowserWindow, ipcMain, Menu, shell, globalShortcut} = require('electron')
 const path = require('path')
 const url = require('url')
 const fs = require('fs');
 
 var auth = require("./auth/login.js");
+
+var signup = require("./auth/signup.js");
 var clock = require("./auth/clock")
+var emp = require('./models/employees')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -15,6 +18,138 @@ let userDataConfig = path.join(app.getPath("userData"), "store.json");
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({width: 800, height: 600})
+
+  // Open the DevTools.
+  // win.webContents.openDevTools()
+
+  const template = [
+    {
+      label: 'Edit',
+      submenu: [
+        {
+          label: 'Clock',
+          role: 'clock',
+          click() { clockWindow(); }
+        },
+        {
+          label: 'New Employee',
+          role: 'New Employee',
+          click() { newEmployee(); }
+        },
+        {
+          label: 'New Admin',
+          role: 'New Admin',
+          click() { newAdmin(); }
+        },
+        {
+          type: 'separator'
+        },
+        {
+          label: 'Attendance',
+          role: 'attendance',
+          click() { attendance(); }
+        },
+        {
+          label: 'Edit Employee',
+          role: 'Edit Employee',
+          click() { editEmployee(); }
+        }
+      ]
+    },
+    {
+      label: 'Window',
+      submenu: [
+        {
+          label: 'Logout',
+          role: 'Logout',
+          click() { logout(); }
+        },
+        {
+          label: 'Quit',
+          role: 'Quit',
+          click() { quit(); }
+        }
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'Learn More',
+          click () { shell.openExternal('http://electron.atom.io') }
+        }
+      ]
+    }
+  ]
+
+  if (process.platform === 'darwin') {
+    template.unshift({
+      label: app.getName(),
+      submenu: [
+        {
+          label: 'Clock',
+          role: 'clock',
+          click() { clockWindow(); }
+        },
+        {
+          label: 'New Employee',
+          role: 'New Employee',
+          click() { newEmployee(); }
+        },
+        {
+          label: 'New Admin',
+          role: 'New Admin',
+          click() { newAdmin(); }
+        },
+        {
+          type: 'separator'
+        },
+        {
+          label: 'Edit Employee',
+          role: 'Edit Employee',
+          click() { editEmployee(); }
+        }
+      ]
+    })
+    // Edit menu.
+    template[1].submenu.push(
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Window',
+        submenu: [
+        {
+          label: 'Logout',
+          role: 'Logout',
+          click() { logout(); }
+        },
+        {
+          label: 'Quit',
+          role: 'Quit',
+          click() { quit(); }
+        }
+      ]
+      }
+    )
+    // Window menu.
+    template[3].submenu = [
+      {
+        label: 'Help',
+        role: 'help',
+        submenu: [
+          {
+            label: 'Learn More',
+            click () { shell.openExternal('http://electron.atom.io') }
+          }
+        ]
+    }
+    ]
+  }
+
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
+
 
   // authenticate user before deciding the page to load.
 
@@ -28,8 +163,15 @@ function createWindow () {
     loginWindow();
   }
 
-  // Open the DevTools.
-  // win.webContents.openDevTools()
+  globalShortcut.register('CommandOrControl+R', () => {
+    // Do stuff when Y and either Command/Control is pressed.
+    win.reload();
+  })
+
+  globalShortcut.register('CommandOrControl+Shift+I', () => {
+    // Do stuff when Y and either Command/Control is pressed.
+    win.webContents.openDevTools();
+  })
 
   // Emitted when the window is closed.
   win.on('closed', () => {
@@ -66,6 +208,47 @@ app.on('activate', () => {
 // code. You can also put them in separate files and require them here.
 // exports.auth = require("./auth/login.js");
 
+function quit() {
+  app.quit();
+}
+
+function logout() {
+  console.log("LOGOUT");
+  var obj = parseDataFile(userDataConfig, {});
+  obj.username = "";
+  obj.password = "";
+  storeDataFile(obj);
+  loginWindow();
+}
+
+function editEmployee() {
+  console.log("new employee");
+}
+
+function newAdmin() {
+  console.log("new admin");
+}
+
+function newEmployee() {
+  console.log("new employee")
+  win.setMenuBarVisibility(true);
+  win.loadURL(url.format({
+      pathname: path.join(__dirname + "/pages/", 'newemployee.html'), // load the new employee form page
+      protocol: 'file:',
+      slashes: true
+    }));
+}
+
+function attendance() {
+  console.log("attendance...");
+  win.setMenuBarVisibility(true);
+  win.loadURL(url.format({
+      pathname: path.join(__dirname + "/pages/", 'attendance.html'), // load the attendance page
+      protocol: 'file:',
+      slashes: true
+    }));
+}
+
 function parseDataFile(filePath, defaults) {
   console.log("parsing data file from ", userDataConfig);
   // We'll try/catch it in case the file doesn't exist yet, which will be the case on the first application run.
@@ -85,6 +268,7 @@ function storeDataFile(data) {
 
 function clockWindow() {
   console.log("loading clock window");
+  win.setMenuBarVisibility(true);
     win.loadURL(url.format({
       pathname: path.join(__dirname + "/pages/", 'clock.html'), // load the clock in/out page
       protocol: 'file:',
@@ -99,11 +283,13 @@ function loginWindow() {
       protocol: 'file:',
       slashes: true
     }))
+    win.setMenuBarVisibility(false);
 }
 
 function confirmWindow(clock) {
   console.log("loading confirm window");
   confirmWin = new BrowserWindow({width: 450, height: 300, parent: win, modal: true});
+  confirmWin.setMenuBarVisibility(false);
   if(clock == "in") {
       confirmWin.loadURL(url.format({
         pathname: path.join(__dirname + "/pages/", 'confirmin.html'),
@@ -176,12 +362,6 @@ function clockout(id) {
   });
 }
 
-// function closeWindow() {
-//   app.w
-// }
-
-// exports.recreateWindow = clockWindow;
-
 ipcMain.on('login', (event, arg) => {
     console.log("username:", arg.username);
     console.log("password:", arg.password);
@@ -200,6 +380,22 @@ ipcMain.on('clockout', (event, arg) => {
     clockout(arg.emp_id)
     // event.returnValue = "clocked Out";
 });
+
+// employees currently plugged in
+ipcMain.on('present', (event, arg) => {
+    console.log("request for present employees");
+    emp.getPresentEmployees(function(result) {
+      event.sender.send("present", result);
+    });
+    // event.returnValue = "clocked Out";
+});
+
+ipcMain.on('signup', (event, emp) => {
+  console.log("calling signup of employee");
+  signup(emp, function(msg){
+    event.sender.send("signup", msg);
+  });
+})
 
 module.exports.confirmWindow = confirmWindow;
 module.exports.clockin = clockin;
