@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+      <title>Attendance</title>
+    
+      <link rel="stylesheet" href="css/normalize.css">
+      <link rel="stylesheet" href="css/tachyons.min.css">
+      <link rel="stylesheet" href="css/style.css">
+
+    </head>
+
+    <body class="navy">
+
+        <div>
+            <h2 class="mv0 pv4 tc">New Employee</h2>
+            <hr>
+            <p id="err" class="red f5 tc"></p>
+            <p id="okay" class="blue f5 tc"></p>
+            <div class="fl w-40">
+                <p class="ph2 pv1 tr blue">Employee ID:</p>
+                <p class="ph2 pv1 tr blue">First Name:</p>
+                <p class="ph2 pv1 tr blue">Last Name:</p>
+                <p class="ph2 pv1 tr blue">Department:</p>
+                <p class="ph2 pv1 tr blue">Sex:</p>
+            </div>
+
+            <div class"fl w-60">
+                <input type="text" id="empid" placeholder="empid" class="pa2 w-40 mb1">
+                <input type="text" id="fname" placeholder="First Name" class="pa2 w-40 mb1">
+                <input type="text" id="lname" placeholder="Last Name" class="pa2 w-40 mb1">
+                <select id="department" class="pa2 w-40 mb1">
+                    <option value="" selected disabled>Department</option>
+                    <option value="Human Resources">Human Resources</option>
+                    <option value="Clerk">Clerk</option>
+                    <option value="Administration">Administration</option>
+                    <option value="I.T">I.T</option>
+                </select>
+                <select id="sex" class="pa2 w-40 mb1">
+                    <option value="" selected disabled>Sex</option>               
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select><br>
+                <button id="save" class="pv2 ph3 ba white bg-navy mv1">SAVE</button>
+                
+            </div>
+
+
+        </div>
+        <script src="js/newemployee.js"></script>
+    </body>
+</html>
