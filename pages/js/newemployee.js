@@ -1,6 +1,8 @@
-const {ipcRenderer} = require("electron");
+const {ipcRenderer, remote} = require("electron");
+const {fprint} = remote.require("./index.js");
 
 var saveBtn = document.getElementById("save");
+var fpBtn = document.getElementById("fprint");
 
 var err = document.getElementById("err");
 var okay = document.getElementById("okay");
@@ -35,4 +37,15 @@ ipcRenderer.on("signup", function(event, res) {
         okay.innerHTML = "Signup Successful.";
     }
 
+})
+
+fpBtn.addEventListener("click", () => {
+    var empid = document.getElementById("empid").value;
+    if(empid != "") {
+        fprint(empid);
+    } else {
+        err.innerHTML = "Input the employee id.";
+        okay.innerHTML = "";
+    }
+    
 })

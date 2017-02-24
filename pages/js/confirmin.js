@@ -1,29 +1,44 @@
-const {ipcRenderer} = require("electron")
+const {ipcRenderer, remote} = require("electron")
+const fprint = remote.require("./index.js");
 // const {clockin, clockout} = remote.require("./index.js")
 
+var err = document.getElementById("err");
+var okay = document.getElementById("welcome");
 var okButton = document.getElementById("okay");
+var fpBtn = document.getElementById("fprint");
 
 okButton.addEventListener("click", () => {
 
     var empID = document.getElementById("empid").value
-    var err = document.getElementById("err");
     if(empID == "") {
         err.innerHTML = "Please provide your ID";
     } else {
-        var err = ipcRenderer.sendSync('clockin', {emp_id: empID})
+        ipcRenderer.send('clockin', {emp_id: empID})
     }
 
 });
 
-// ipcRenderer.on("message", function(event, args) {
-//     console.log("message:", args);
-//     var err = document.getElementById("err");
-//     if(args == "Welcome to work") {
-//         console.log("welcome message:", args);
-//         document.getElementById("welcome").innerHTML = args;
-//         // set time interval to close the page
-//     } else {
-//         console.log("err message:", args);
-//         err.innerHTML = args;
-//     }
-// })
+
+fpBtn.addEventListener("click", () => {
+    var empid = document.getElementById("empid").value;
+    if(empid != "") {
+        fprint(empid);
+    } else {
+        err.innerHTML = "Input the employee id.";
+        okay.innerHTML = "";
+    }
+    
+})
+
+ipcRenderer.on("clockin", function(event, m) {
+    console.log("message:", m);
+    
+    if(m == "Welcome to work") {
+        console.log("welcome message:", m);
+        document.getElementById("welcome").innerHTML = m;
+        // set time interval to close the page
+    } else {
+        console.log("err message:", m);
+        err.innerHTML = m;
+    }
+})

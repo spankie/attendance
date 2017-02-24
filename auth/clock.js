@@ -10,6 +10,7 @@ function checkIn(id, callback) {
     connection.query("SELECT * FROM roster WHERE DATE(date_in) = DATE(NOW()) AND emp_id = ?", [id], function(error, results) {
         if(error) {
             console.log("error checking the roster. (IN)");
+            callback("Error Clocking In")
             return;
         }
         if(results.length > 0) {
@@ -28,16 +29,17 @@ function checkIn(id, callback) {
 
 function checkOut(id, callback) {
     console.log("inside checkOut()");
-    connection.query("SELECT * FROM roster WHERE DATE(date_out) = DATE(NOW()) AND emp_id = ?", [id], function(error, results) {
+    connection.query("SELECT * FROM roster WHERE DATE(date_in) = DATE(NOW()) AND DATE(date_out) = DATE(NOW()) AND emp_id = ?", [id], function(error, results) {
         if(error) {
             console.log("error checking the roster. (OUT)");
+            callback("Error Clocking Out")
             return;
         }
         // callback();
         if(results.length > 0) {
             // the employee has clocked out...
-            console.log("the employee has clocked out...");
-            callback("You are already clocked out...")
+            console.log("the employee has clocked out...", JSON.stringify(results));
+            callback("You are already Clocked Out");
         } else {
             // the employee has not clocked out...
             console.log("the employee has not clocked out...");
@@ -54,6 +56,7 @@ function clockIN(id, callback) {
     connection.query("INSERT INTO roster SET emp_id = ?, date_in = CURRENT_TIMESTAMP", [id], function(error, results) {
         if(error) {
             console.log("error inserting clockin roster.");
+            callback("Error Clocking In");
             return;
         }
         console.log("welcome to work...")
@@ -65,9 +68,10 @@ function clockIN(id, callback) {
 function clockOUT(id, callback) {
     console.log("clockOut(id, callback)");
     // var data = {date_out: "NOW()"};
-    connection.query("UPDATE roster SET date_out = CURRENT_TIMESTAMP WHERE emp_id = ?", [id], function(error, results) {
+    connection.query("UPDATE roster SET date_out = CURRENT_TIMESTAMP WHERE emp_id = ? AND DATE(date_in) = DATE(NOW())", [id], function(error, results) {
         if(error) {
             console.log("error inserting clockin roster.");
+            callback("Sorry, could not clock you out.")
             return;
         }
         console.log("Goodbye...")
@@ -76,11 +80,13 @@ function clockOUT(id, callback) {
     })
 }
 
-module.exports.clockIN = function (id, callback) {
-    console.log("checkIn()");
-    checkIn(id, callback);
-}
-module.exports.clockOUT = function (id, callback) {
-    console.log("checkOut()");
-    checkOut(id, callback);
-}
+module.exports.clockIN = checkIn;
+// function (id, callback) {
+//     console.log("checkIn()");
+//     checkIn(id, callback);
+// }
+module.exports.clockOUT = checkOut;
+// function (id, callback) {
+//     console.log("checkOut()");
+//     checkOut(id, callback);
+// }

@@ -1,3 +1,4 @@
+const spawn = require('child_process').spawn;
 var {config} = require("../config/config");
 var mysql = require("mysql");
 var connection = mysql.createConnection(config.dbAttendance)
@@ -16,4 +17,19 @@ function getPresentEmployees(callback) {
     })
 }
 
+function fprint(emp) {
+    var child = spawn("java", ["-cp", "/home/spankie/fprint/:/home/spankie/fprint/dpuareu.jar:/home/spankie/fprint/mysql-connector-java-5.1.40-bin.jar", "UareUSampleJava", emp]);
+    
+    child.on('close', function (exitCode) {
+        if (exitCode !== 0) {
+            console.error('Something went wrong!');
+        }
+    });
+
+    child.on("data", function(data){
+        process.stdout.write(data);
+    });
+}
+
 module.exports.getPresentEmployees = getPresentEmployees;
+module.exports.fprint = fprint;

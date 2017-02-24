@@ -324,43 +324,15 @@ function checkLogin(msg, uname, pass) {
   }
 }
 
-function clockin(id) {
-  console.log("clockin()")
-  clock.clockIN(id, function(message) {
-      console.log("send :", message, ": to confirmin.html");
-      if(message == "Welcome to work") {
-        if(confirmWin != null) {
-          console.log("close window")
-          confirmWin.close()
-          // confirmWin.webContents.send("message", message);
-        } else {
-          console.log("confirmwin is null");
-        }
-      } else {
-        console.log("window reload")
-        confirmWin.reload()
-      }
-  });
+function clockin(id, callback) {
+  console.log("clockin()");
+  clock.clockIN(id, callback);
 }
 
-function clockout(id) {
-  console.log("clockout()");
-  clock.clockOUT(id, function(message) {
-      console.log("send :", message, ": to confirmout.html");
-      if(message == "Goodbye") {
-        if(confirmWin != null) {
-          console.log("close window")
-          confirmWin.close()
-          // confirmWin.webContents.send("message", message);
-        } else {
-          console.log("confirmwin is null");
-        }
-      } else {
-        console.log("window reload")
-        confirmWin.reload()
-      }
-  });
-}
+// function clockout(id, callback) {
+//   console.log("clockout()");
+//   clock.clockOUT(id, callback);
+// }
 
 ipcMain.on('login', (event, arg) => {
     console.log("username:", arg.username);
@@ -371,14 +343,19 @@ ipcMain.on('login', (event, arg) => {
 
 ipcMain.on('clockin', (event, arg) => {
     console.log("request to clock in");
-    clockin(arg.emp_id)
+    clockin(arg.emp_id, function(message) {
+      console.log("send :", message, ": to confirmin.html");
+      event.sender.send("clockin", message);
+    });
     // event.returnValue = "clocked in";
 });
 
 ipcMain.on('clockout', (event, arg) => {
     console.log("request to clock out");
-    clockout(arg.emp_id)
-    // event.returnValue = "clocked Out";
+    clock.clockOUT(arg.emp_id, function(message) {
+      console.log("send :", message, ": to confirmout.html");
+      event.sender.send("clockout", message);
+    })
 });
 
 // employees currently plugged in
@@ -399,4 +376,5 @@ ipcMain.on('signup', (event, emp) => {
 
 module.exports.confirmWindow = confirmWindow;
 module.exports.clockin = clockin;
-module.exports.clockout = clockout;
+// module.exports.clockout = clockout;
+module.exports.fprint = emp.fprint;
