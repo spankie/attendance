@@ -1,5 +1,5 @@
 const {ipcRenderer, remote} = require("electron")
-const fprint = remote.require("./index.js");
+const {fprint} = remote.require("./index.js");
 // const {clockin, clockout} = remote.require("./index.js")
 
 var err = document.getElementById("err");
